@@ -12,7 +12,7 @@ const MIN_DISTANCE = 10;
 
 // Simple rPPG implementation in JavaScript
 // - Code could be improved given better documentation available for opencv.js
-export class Heartbeat {
+class Heartbeat {
   constructor(webcamId, canvasId, classifierPath, targetFps, windowSize, rppgInterval) {
     this.webcamId = webcamId;
     this.canvasId = canvasId,
@@ -90,12 +90,16 @@ export class Heartbeat {
       this.rescan = []; // 120 x 1 rescan bool
       this.face = new cv.Rect();  // Position of the face
       // Load face detector
-      this.classifier = new cv.CascadeClassifier();
-      let faceCascadeFile = "haarcascade_frontalface_alt.xml";
-      if (!this.classifier.load(faceCascadeFile)) {
-        await this.createFileFromUrl(faceCascadeFile, this.classifierPath);
-        this.classifier.load(faceCascadeFile)
-      }
+      // this.classifier = new cv.CascadeClassifier();
+      // let faceCascadeFile = "haarcascade_frontalface_alt.xml";
+      // if (!this.classifier.load(faceCascadeFile)) {
+      //   await this.createFileFromUrl(faceCascadeFile, this.classifierPath);
+      //   this.classifier.load(faceCascadeFile)
+      // }
+      // faceapi.js
+      let MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+      await faceapi.loadFaceLandmarkModel(MODEL_URL)
+      await faceapi.loadTinyFaceDetectorModel(MODEL_URL)
       this.scanTimer = setInterval(this.processFrame.bind(this),
         MSEC_PER_SEC/this.targetFps);
       this.rppgTimer = setInterval(this.rppg.bind(this), this.rppgInterval);
@@ -161,11 +165,21 @@ export class Heartbeat {
     }
   }
   // Run face classifier
-  detectFace(gray) {
+  async detectFace(gray) {
     let faces = new cv.RectVector();
-    this.classifier.detectMultiScale(gray, faces, 1.1, 3, 0);
-    if (faces.size() > 0) {
+    // this.classifier.detectMultiScale(gray, faces, 1.1, 3, 0);
+    const inputSize = 512;
+    const scoreThreshold = 0.5;
+    const OPTION = new faceapi.TinyFaceDetectorOptions({
+      inputSize,
+      scoreThreshold
+    });
+
+    const result = await faceapi.detectSingleFace(this.webcamVideoElement, OPTION).withFaceLandmarks();
+    // if (faces.size() > 0) {
+    if (result){
       this.face = faces.get(0);
+      this.face = {x: result.alignedRect.box.topLeft.x, y: result.alignedRect.box.topLeft.y, width: result.alignedRect.box.width, height: result.alignedRect.box.height}
       this.faceValid = true;
     } else {
       console.log("No faces");

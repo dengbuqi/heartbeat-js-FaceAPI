@@ -1,7 +1,7 @@
 // import {Heartbeat} from './heartbeat.js';
 
-const OPENCV_URI = "https://docs.opencv.org/master/opencv.js";
-const HAARCASCADE_URI = "https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt.xml"
+const OPENCV_URI = "./opencv.js"//"https://docs.opencv.org/master/opencv.js";
+const HAARCASCADE_URI = "./haarcascade_frontalface_alt.xml"//"https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt.xml"
 
 // Load opencv when needed
 async function loadOpenCv(uri) {

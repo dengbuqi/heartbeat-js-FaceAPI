@@ -25,7 +25,8 @@ See also my [C++ implementation](https://github.com/prouast/heartbeat) and [YouT
 
 ## Addition
 
-I replace the face detection function to FaceAPI project. It's make the process faster!
+I replace the face detection function to FaceAPI project. It makes the process faster!
+
 License
 ----
 
